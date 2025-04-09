@@ -14,6 +14,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { ChevronLeftIcon, ChevronRightIcon, Menu } from 'lucide-react'
 import * as React from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 
 const drawerWidth = 240
 
@@ -43,7 +44,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 	alignItems: 'center',
 	justifyContent: 'flex-end',
 	padding: theme.spacing(0, 1),
-	// necessary for content to be below app bar
 	...theme.mixins.toolbar,
 }))
 
@@ -103,44 +103,54 @@ const menuItems = [
 	{
 		title: 'Dashboard',
 		iconSrc: './menu/dashboard.svg',
+		path: '/dashboard',
 	},
 	{
 		title: 'Transactions',
 		iconSrc: './menu/transactions.svg',
+		path: '/transactions',
 	},
 	{
 		title: 'Accounts',
 		iconSrc: './menu/accounts.svg',
+		path: '/accounts',
 	},
 	{
 		title: 'Investments',
 		iconSrc: './menu/investments.svg',
+		path: '/investments',
 	},
 	{
 		title: 'Credit Cards',
 		iconSrc: './menu/credit_cards.svg',
+		path: '/credit-cards',
 	},
 	{
 		title: 'Loans',
 		iconSrc: './menu/loans.svg',
+		path: '/loans',
 	},
 	{
 		title: 'Services',
 		iconSrc: './menu/services.svg',
+		path: '/services',
 	},
 	{
 		title: 'My Privileges',
 		iconSrc: './menu/privileges.svg',
+		path: '/privileges',
 	},
 	{
 		title: 'Settings',
 		iconSrc: './menu/settings.svg',
+		path: '/settings',
 	},
 ]
 
 export default function MiniDrawer() {
 	const theme = useTheme()
 	const [open, setOpen] = React.useState(false)
+	const location = useLocation()
 
 	const handleDrawerOpen = () => {
 		setOpen(true)
@@ -173,8 +183,13 @@ export default function MiniDrawer() {
 					>
 						<Menu />
 					</IconButton>
-					<Typography variant='h6' noWrap component='div'>
-						Overview
+					<Typography
+						className='capitalize'
+						variant='h6'
+						noWrap
+						component='div'
+					>
+						{location.pathname.slice(1)}
 					</Typography>
 					<Typography variant='h6' component='div'>
 						<div className='w-9 h-9 rounded-full overflow-hidden'>
@@ -199,8 +214,14 @@ export default function MiniDrawer() {
 				</DrawerHeader>
 				<Divider />
 				<List>
-					{menuItems.map(({ title, iconSrc }) => (
-						<MenuItem open={open} title={title} iconSrc={iconSrc} />
+					{menuItems.map(({ title, iconSrc, path }) => (
+						<MenuItem
+							key={title}
+							open={open}
+							title={title}
+							iconSrc={iconSrc}
+							path={path}
+						/>
 					))}
 				</List>
 			</Drawer>
@@ -212,16 +233,33 @@ interface MenuItemProps {
 	open: boolean
 	title: string
 	iconSrc: string
+	path: string
 }
 
-export const MenuItem: React.FC<MenuItemProps> = ({ open, title, iconSrc }) => {
+export const MenuItem: React.FC<MenuItemProps> = ({
+	open,
+	title,
+	iconSrc,
+	path,
+}) => {
 	return (
 		<ListItem disablePadding sx={{ display: 'block' }}>
 			<ListItemButton
+				component={NavLink}
+				to={path}
 				sx={[
 					{
 						minHeight: 48,
 						px: 2.5,
+						'&.active': {
+							backgroundColor: 'rgba(25, 118, 210, 0.08)',
+							'& .MuiListItemIcon-root': {
+								'& img': {
+									filter:
+										'brightness(0) saturate(100%) invert(24%) sepia(98%) saturate(2091%) hue-rotate(218deg) brightness(93%) contrast(93%)',
+								},
+							},
+						},
 					},
 					open
 						? {
@@ -247,7 +285,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({ open, title, iconSrc }) => {
 							  },
 					]}
 				>
-					<img src={iconSrc} alt={title} />
+					<img className='fill-violet-900' src={iconSrc} alt={title} />
 				</ListItemIcon>
 				<ListItemText
 					primary={title}
